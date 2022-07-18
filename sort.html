@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>排行榜</title>
+    <style>
+        .search,.sort{
+            width: 60vw;
+            margin: auto;
+        }
+        .search{
+        padding-top:80px;
+        margin-bottom: 60px;
+        }
+        img{
+            width: 50px;
+            height: 50px;
+        }
+        .search,.title {
+            display:flex;
+            justify-content: space-around;
+        }
+        .title {
+            text-align: center;
+        }
+        .sort>ul>li{
+            list-style: none;
+            display:flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="search">
+        昵称<input type="text" name="nick" id="nick">
+        缺失数<input type="text" name="miss" id="miss">
+        反应速度<input type="text" name="speed" id="speed">
+        <button id="btn">添加</button>
+    </div>
+    <div class="sort">
+        <div class="title">
+            <p>头像</p>
+            <p>昵称</p>
+            <p>排名</p>
+        </div>
+        <ul>
+            <li> <img src="" alt=""><p></p><p></p> </li>
+        </ul>
+    </div>
+    <script>
+        let btn=document.getElementById('btn')
+        let imgList=['../img/A.png', '../img/B.png', '../img/C.png', '../img/D.png']
+        btn.addEventListener('click',()=>{
+            addOne()
+        })
+        async function addOne(){
+            let nick = document.getElementById('nick').value
+            let miss = document.getElementById('miss').value
+            let speed = document.getElementById('speed').value
+            add(nick, miss, speed)
+        }
+        function add(nick, miss, speed){
+            let allArr =JSON.parse(localStorage.getItem('allArr')) || []
+            allArr.push({ nick,miss,speed})
+            localStorage.setItem('allArr',JSON.stringify(allArr))
+            sort(allArr)
+        }
+        function sort(arr){
+            let sortArr=arr.sort((a,b)=>{
+                return a.miss-b.miss
+            })
+            let sortArr2= sortArr.sort((a, b) => {
+                if(b.miss == a.miss){
+                    return a.speed - b.speed
+                }
+            })
+            append(sortArr2)
+        }
+        function append(sortArr){
+            let ul = document.querySelector('ul')
+            let first = ul.firstElementChild
+             while (first) {
+                first.remove();
+                first = ul.firstElementChild;
+
+            } 
+            sortArr.forEach((item,index)=>{
+                let random = Math.floor(Math.random() * 4)
+                let li = document.createElement('li')
+                let img = document.createElement('img')
+                let p1 = document.createElement('p')
+                let p2 = document.createElement('p')
+                img.src= imgList[random]
+                p1.innerHTML=item.nick
+                p2.innerHTML=index+1
+                li.appendChild(img)
+                li.appendChild(p1)
+                li.appendChild(p2)
+                ul.appendChild(li)
+                document.getElementById('nick').value = '',
+                document.getElementById('miss').value = '',
+                document.getElementById('speed').value = ''
+            })
+        }
+        window.onload=function(){
+            let allArr = JSON.parse(localStorage.getItem('allArr')) || []
+            append(allArr)
+        }
+    </script>
+</body>
+</html>
